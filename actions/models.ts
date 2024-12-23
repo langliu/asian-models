@@ -1,6 +1,6 @@
 'use server'
 import prisma from '@/lib/prisma'
-import { Model } from '@prisma/client'
+import type { Model } from '@prisma/client'
 
 /**
  * 获取模型数据的函数
@@ -8,13 +8,16 @@ import { Model } from '@prisma/client'
  * @param pageSize - 每页大小，默认为 10
  * @returns 返回分页查询后的模型数据
  */
-export async function getModels (page = 1, pageSize = 10) {
+export async function getModels(page = 1, pageSize = 10) {
   const skip = (page - 1) * pageSize
   const take = pageSize
 
   return prisma.model.findMany({
     skip,
     take,
+    orderBy: {
+      updatedAt: 'desc',
+    },
   })
 }
 
@@ -23,7 +26,7 @@ export async function getModels (page = 1, pageSize = 10) {
  * @param id - 模型 ID
  * @returns 返回查询到的模型数据
  */
-export async function getModelById (id: string) {
+export async function getModelById(id: string) {
   return prisma.model.findUnique({
     where: {
       id,
@@ -36,8 +39,17 @@ export async function getModelById (id: string) {
  * @param data - 模型数据
  * @returns 返回创建后的模型数据
  */
-export async function createModel (data: Omit<Model, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createModel(data: Omit<Model, 'id' | 'createdAt' | 'updatedAt'>) {
   return prisma.model.create({
+    data,
+  })
+}
+
+export async function updateModel(data: Omit<Model, 'updatedAt' | 'createdAt'>) {
+  return prisma.model.update({
+    where: {
+      id: data.id,
+    },
     data,
   })
 }
