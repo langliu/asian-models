@@ -3,13 +3,14 @@ import { S3Client } from '@aws-sdk/client-s3'
 import { v4 as uuidv4 } from 'uuid'
 
 export async function POST (request: Request) {
-  const { filename, contentType } = await request.json()
+  const { filename, contentType, uploadDir } = await request.json()
 
   try {
     const client = new S3Client({ region: process.env.AWS_REGION })
+    const key = uploadDir ? [uploadDir, uuidv4()].join('/') : uuidv4()
     const { url, fields } = await createPresignedPost(client, {
       Bucket: process.env.AWS_BUCKET_NAME!,
-      Key: uuidv4(),
+      Key: key,
       Conditions: [
         ['content-length-range', 0, 10485760], // up to 10 MB
         ['starts-with', '$Content-Type', contentType],

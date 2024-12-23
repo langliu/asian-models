@@ -17,18 +17,19 @@ enum AgeGrading {
 }
 
 model Model {
-  id         String       @id @default(uuid())
-  name       String       @unique
-  avatar     String? // 头像
-  homepage   String?
-  x          String?
-  weibo      String?
-  instagram  String?
-  onlyfans   String?
-  ageGrading AgeGrading?  @default(G)
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  AlbumModel AlbumModel[]
+  id           String       @id @default(uuid())
+  name         String       @unique
+  introduction String?
+  avatar       String? // 头像
+  homepage     String?
+  x            String?
+  weibo        String?
+  instagram    String?
+  onlyfans     String?
+  ageGrading   AgeGrading?  @default(G)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  AlbumModel   AlbumModel[]
 
   @@map("models")
 }
