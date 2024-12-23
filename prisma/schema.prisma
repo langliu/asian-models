@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum AgeGrading {
+  G // 普通级，适合所有年龄层的作品
+  PG // 家长指导级
+  R // 限制级，对部分年龄层的作品有一定的限制
+  RR
+  RRR
+}
+
+model Model {
+  id         String       @id @default(uuid())
+  name       String       @unique
+  avatar     String? // 头像
+  homepage   String?
+  x          String?
+  weibo      String?
+  instagram  String?
+  onlyfans   String?
+  ageGrading AgeGrading?  @default(G)
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  AlbumModel AlbumModel[]
+
+  @@map("models")
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tags")
+}
+
+model Album {
+  id         String       @id @default(uuid())
+  name       String       @unique
+  images     Int?         @default(0) // 图片数量
+  videos     Int?         @default(0) // 视频数量
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  Agency     Agency?      @relation(fields: [agencyId], references: [id])
+  agencyId   String?
+  AlbumModel AlbumModel[]
+  Image      Image[]
+  ageGrading AgeGrading?  @default(G)
+
+  @@map("albums")
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  url       String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Album     Album?   @relation(fields: [albumId], references: [id])
+  albumId   String?
+
+  @@map("images")
+}
+
+model Agency {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  albums    Album[]
+
+  @@map("agencies")
+}
+
+model AlbumModel {
+  model   Model  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  modelId String // relation scalar field (used in the `@relation` attribute above)
+  album   Album  @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  albumId String // relation scalar field (used in the `@relation` attribute above)
+
+  @@id([modelId, albumId])
+  @@map(name: "album_models")
+}
