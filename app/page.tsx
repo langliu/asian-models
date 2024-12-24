@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { type FormEvent, useState } from 'react'
 
-export default function Page () {
+export default function Page() {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!file) {
@@ -16,24 +16,21 @@ export default function Page () {
 
     setUploading(true)
 
-    const response = await fetch(
-      process.env.NEXT_PUBLIC_BASE_URL + '/api/upload',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ filename: file.name, contentType: file.type }),
-      }
-    )
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ filename: file.name, contentType: file.type }),
+    })
 
     if (response.ok) {
       const { url, fields } = await response.json()
 
       const formData = new FormData()
-      Object.entries(fields).forEach(([key, value]) => {
+      for (const [key, value] of Object.entries(fields)) {
         formData.append(key, value as string)
-      })
+      }
       formData.append('file', file)
 
       const uploadResponse = await fetch(url, {
@@ -60,17 +57,17 @@ export default function Page () {
       <h1>Upload a File to S3</h1>
       <form onSubmit={handleSubmit}>
         <input
-          id="file"
-          type="file"
+          id='file'
+          type='file'
           onChange={(e) => {
             const files = e.target.files
             if (files) {
               setFile(files[0])
             }
           }}
-          accept="image/png, image/jpeg, image/avif"
+          accept='image/png, image/jpeg, image/avif'
         />
-        <button type="submit" disabled={uploading}>
+        <button type='submit' disabled={uploading}>
           Upload
         </button>
       </form>
