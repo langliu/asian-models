@@ -12,13 +12,24 @@ export async function getModels(page = 1, pageSize = 10) {
   const skip = (page - 1) * pageSize
   const take = pageSize
 
-  return prisma.model.findMany({
-    skip,
-    take,
-    orderBy: {
-      updatedAt: 'desc',
-    },
-  })
+  const [models, totalCount] = await prisma.$transaction([
+    prisma.model.findMany({
+      skip,
+      take,
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    }),
+    prisma.model.count(),
+  ])
+
+  return {
+    data: models,
+    totalPage: Math.ceil(totalCount / pageSize),
+    totalCount,
+    pageIndex: page,
+    pageSize,
+  }
 }
 
 /**

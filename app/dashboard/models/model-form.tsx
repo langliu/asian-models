@@ -26,7 +26,6 @@ import { AgeGrading, type Model } from '@prisma/client'
 import { useDebounceFn } from 'ahooks'
 import { clsx } from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -58,7 +57,7 @@ export function ModelForm({ initialValues, createAction, editAction }: ModelForm
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialValues || {
       name: '',
       introduction: '',
       avatar: null,
@@ -91,12 +90,6 @@ export function ModelForm({ initialValues, createAction, editAction }: ModelForm
       wait: 1000,
     },
   )
-
-  useEffect(() => {
-    if (initialValues) {
-      form.reset(initialValues)
-    }
-  }, [initialValues, form])
 
   return (
     <div className={clsx('flex w-[600px] flex-col sm:w-[800px] sm:max-w-full')}>
@@ -161,8 +154,8 @@ export function ModelForm({ initialValues, createAction, editAction }: ModelForm
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value || undefined}
-                    value={field.value || 'G'}
+                    defaultValue={field.value || AgeGrading.G}
+                    value={field.value || AgeGrading.G}
                   >
                     <FormControl>
                       <SelectTrigger>

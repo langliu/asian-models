@@ -25,18 +25,32 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Settings } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useQueryState } from 'nuqs'
+import { parseAsInteger } from 'nuqs/server'
 import { useState } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  rowCount: number
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  rowCount,
+}: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [pageIndex, setPageIndex] = useQueryState('pageIndex', parseAsInteger.withDefault(1))
+  const [pageSize, setPageSize] = useQueryState('pageSize', parseAsInteger.withDefault(10))
+  const router = useRouter()
+
+  console.log('data table', data)
   const table = useReactTable({
+    rowCount,
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -47,7 +61,12 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
     state: {
       sorting,
       columnVisibility,
+      pagination: {
+        pageIndex: pageIndex - 1,
+        pageSize,
+      },
     },
+    manualPagination: true,
   })
 
   return (
@@ -56,7 +75,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='outline' className='ml-auto'>
-              Columns
+              <Settings />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end'>
@@ -120,7 +139,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <Button
           variant='outline'
           size='sm'
-          onClick={() => table.previousPage()}
+          onClick={() =>
+            setPageIndex(pageIndex - 1).then(() => {
+              router.refresh()
+            })
+          }
           disabled={!table.getCanPreviousPage()}
         >
           <ArrowLeft />
@@ -128,7 +151,11 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
         <Button
           variant='outline'
           size='sm'
-          onClick={() => table.nextPage()}
+          onClick={() => {
+            setPageIndex(pageIndex + 1).then(() => {
+              router.refresh()
+            })
+          }}
           disabled={!table.getCanNextPage()}
         >
           <ArrowRight />
