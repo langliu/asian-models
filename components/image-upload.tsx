@@ -164,6 +164,7 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
         <div
           className='cursor-pointer rounded-lg border-2 border-gray-300 border-dashed p-4 text-center'
           onClick={() => fileInputRef.current?.click()}
@@ -205,6 +206,7 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
                       className='rounded-lg object-cover'
                     />
                     <button
+                      type={'button'}
                       className='absolute top-0 right-0 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100'
                       onClick={(e) => {
                         e.stopPropagation()
@@ -240,6 +242,7 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
                       className='h-full w-full object-contain'
                     />
                     <button
+                      type={'button'}
                       onClick={handlePrevImage}
                       className='-translate-y-1/2 absolute top-1/2 left-0 transform rounded-r bg-black bg-opacity-50 p-2 text-white'
                       aria-label='Previous image'
@@ -247,6 +250,7 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
                       <ChevronLeft className='h-6 w-6' />
                     </button>
                     <button
+                      type={'button'}
                       onClick={handleNextImage}
                       className='-translate-y-1/2 absolute top-1/2 right-0 transform rounded-l bg-black bg-opacity-50 p-2 text-white'
                       aria-label='Next image'

@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Asia Model',
   description: '亚洲模特集合',
-  icons: '/favicon.ico',
+  icons: '/favicon.jpeg',
 }
 
 export default function RootLayout({
