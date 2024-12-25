@@ -3,18 +3,17 @@
 import {
   BookOpen,
   Bot,
-  Command,
   Frame,
   LifeBuoy,
   Map as MapIcon,
   PieChart,
+  Plus,
   Send,
   Settings2,
   SquareTerminal,
 } from 'lucide-react'
 import type { ComponentProps } from 'react'
 
-import { NavMain } from '@/components/nav-main'
 import { NavProjects } from '@/components/nav-projects'
 import { NavSecondary } from '@/components/nav-secondary'
 import { NavUser } from '@/components/nav-user'
@@ -140,16 +139,30 @@ const data = {
       name: '模特',
       url: '/dashboard/models',
       icon: Frame,
+      actions: [
+        {
+          name: '创建',
+          url: '/dashboard/models/create',
+          icon: Plus,
+        },
+      ],
     },
     {
-      name: 'Sales & Marketing',
-      url: '#',
+      name: '写真',
+      url: '/dashboard/albums',
       icon: PieChart,
     },
     {
-      name: 'Travel',
-      url: '#',
+      name: '机构',
+      url: '/dashboard/agencies',
       icon: MapIcon,
+      actions: [
+        {
+          name: '创建',
+          url: '/dashboard/agencies/create',
+          icon: Plus,
+        },
+      ],
     },
   ],
 }

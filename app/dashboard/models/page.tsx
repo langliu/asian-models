@@ -1,9 +1,8 @@
 import { getModels } from '@/actions/models'
+import { DataTable } from '@/components/data-table'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import type { SearchParams } from 'nuqs/server'
 import { columns } from './columns'
-import { DataTable } from './data-table'
 import { searchParamsCache } from './search-params'
 
 export const metadata: Metadata = {
@@ -22,7 +21,6 @@ export default async function Page({ searchParams }: PageProps) {
 
   return (
     <div>
-      <Link href={'/dashboard/models/create'}>Create</Link>
       <DataTable columns={columns} data={models} rowCount={totalCount} />
     </div>
   )

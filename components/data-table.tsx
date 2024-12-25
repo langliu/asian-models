@@ -45,10 +45,9 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [pageIndex, setPageIndex] = useQueryState('pageIndex', parseAsInteger.withDefault(1))
-  const [pageSize, setPageSize] = useQueryState('pageSize', parseAsInteger.withDefault(10))
+  const [pageSize] = useQueryState('pageSize', parseAsInteger.withDefault(10))
   const router = useRouter()
 
-  console.log('data table', data)
   const table = useReactTable({
     rowCount,
     data,
@@ -71,7 +70,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className='flex items-center py-4'>
+      <div className='flex items-center pb-4'>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='outline' className='ml-auto'>
