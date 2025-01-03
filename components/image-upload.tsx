@@ -1,5 +1,6 @@
 'use client'
 
+import { uploadImage } from '@/actions'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -18,29 +19,18 @@ import { type ChangeEvent, type DragEvent, useCallback, useEffect, useRef, useSt
 interface ImageUploadProps {
   multiple?: boolean
   maxFiles?: number
-  onChange: (files: File[]) => void
+  onChange: (urls: string[]) => void
+  value: string[]
 }
 
 interface ImageStatus {
-  url: string
+  url: string | null
+  fileResource: string
   status: 'idle' | 'uploading' | 'success' | 'error'
+  file: File | null
 }
 
-// 模拟上传API
-const uploadImage = async (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (Math.random() > 0.3) {
-        // 70% 成功率
-        resolve(`https://api.example.com/images/${file.name}`)
-      } else {
-        reject(new Error('Upload failed'))
-      }
-    }, 2000)
-  })
-}
-
-export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageUploadProps) {
+export function ImageUpload({ multiple = false, maxFiles = 5, onChange, value }: ImageUploadProps) {
   const [imageStatuses, setImageStatuses] = useState<ImageStatus[]>([])
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -54,37 +44,47 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
     }
 
     const newFiles = multiple ? files : [files[0]]
-    onChange(newFiles)
+    // onChange(newFiles)
 
     const newStatuses = newFiles.map((file) => ({
-      url: URL.createObjectURL(file),
+      fileResource: URL.createObjectURL(file),
       status: 'idle' as const,
+      file: file,
+      url: null,
     }))
 
     setImageStatuses((prevStatuses) => [...prevStatuses, ...newStatuses])
+  }
 
-    for (let i = 0; i < newFiles.length; i++) {
-      const file = newFiles[i]
-      const index = imageStatuses.length + i
-      setImageStatuses((prevStatuses) =>
-        prevStatuses.map((status, idx) =>
-          idx === index ? { ...status, status: 'uploading' } : status,
-        ),
-      )
-
-      try {
-        await uploadImage(file)
+  const handleUpload = async () => {
+    for (let i = 0; i < imageStatuses.length; i++) {
+      const file = imageStatuses[i].file
+      if (['idle', 'error'].includes(imageStatuses[i].status)) {
         setImageStatuses((prevStatuses) =>
           prevStatuses.map((status, idx) =>
-            idx === index ? { ...status, status: 'success' } : status,
+            idx === i ? { ...status, status: 'uploading' } : status,
           ),
         )
-      } catch (error) {
-        setImageStatuses((prevStatuses) =>
-          prevStatuses.map((status, idx) =>
-            idx === index ? { ...status, status: 'error' } : status,
-          ),
-        )
+        if (!file) {
+          continue
+        }
+        try {
+          const url = await uploadImage(file, 'album')
+          setImageStatuses((prevStatuses) => {
+            const list = prevStatuses.map((status, idx) =>
+              idx === i ? { ...status, status: 'success' as const, url } : status,
+            )
+            const urls = list.filter((status) => !!status.url).map((url) => url.url)
+            onChange?.(urls?.filter((url) => url !== null) || [])
+            return list
+          })
+        } catch (error) {
+          setImageStatuses((prevStatuses) =>
+            prevStatuses.map((status, idx) =>
+              idx === i ? { ...status, status: 'error' } : status,
+            ),
+          )
+        }
       }
     }
   }
@@ -143,6 +143,32 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
     }
   }, [handleKeyDown])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // useEffect(() => {
+  //   const urls = imageStatuses.filter((status) => !!status.url).map((url) => url.url)
+  //   onChange?.(urls?.filter((url) => url !== null) || [])
+  // }, [imageStatuses])
+
+  // useEffect(() => {
+  //   if (Array.isArray(value) && value.length > 0) {
+  //     const newStatuses = value.map((url) => ({
+  //       url,
+  //       fileResource: url,
+  //       status: 'success' as const,
+  //       file: null,
+  //     }))
+  //     const additionalImages: ImageStatus[] = newStatuses.filter(
+  //       (newStatus) => !imageStatuses.find((status) => status.url === newStatus.url),
+  //     )
+  //     const oldImages = imageStatuses.filter(
+  //       (status) =>
+  //         status.status !== 'success' ||
+  //         newStatuses.find((newStatus) => newStatus.url === status.url),
+  //     )
+  //     setImageStatuses([...oldImages, ...additionalImages])
+  //   }
+  // }, [value])
+
   const handlePrevImage = () => {
     setSelectedImageIndex((prevIndex) =>
       prevIndex !== null && prevIndex > 0 ? prevIndex - 1 : imageStatuses.length - 1,
@@ -189,7 +215,7 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
           <div className='mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4'>
             {imageStatuses.map((status, index) => (
               <Dialog
-                key={status.url}
+                key={status.url || status.fileResource}
                 open={isDialogOpen && selectedImageIndex === index}
                 onOpenChange={(open) => {
                   setIsDialogOpen(open)
@@ -199,7 +225,7 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
                 <DialogTrigger asChild>
                   <div className='group relative cursor-pointer'>
                     <Image
-                      src={status.url}
+                      src={status.url || status.fileResource}
                       alt={`Uploaded image ${index + 1}`}
                       width={200}
                       height={200}
@@ -265,8 +291,8 @@ export function ImageUpload({ multiple = false, maxFiles = 5, onChange }: ImageU
         )}
       </CardContent>
       <CardFooter>
-        <Button onClick={() => fileInputRef.current?.click()}>
-          Select {multiple ? 'Images' : 'Image'}
+        <Button type={'button'} onClick={handleUpload}>
+          Upload {multiple ? 'Images' : 'Image'}
         </Button>
       </CardFooter>
     </Card>

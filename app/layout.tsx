@@ -1,3 +1,4 @@
+import { ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
@@ -26,10 +27,20 @@ export default function RootLayout({
   children: ReactNode
 }>) {
   return (
-    <html lang='zh'>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <NuqsAdapter>{children}</NuqsAdapter>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang='zh'>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <header>
+            <SignedOut>
+              <SignInButton />
+            </SignedOut>
+            <SignedIn>
+              <UserButton />
+            </SignedIn>
+          </header>
+          <NuqsAdapter>{children}</NuqsAdapter>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

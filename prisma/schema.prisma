@@ -29,16 +29,17 @@ model Model {
   ageGrading   AgeGrading?  @default(G)
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
-  AlbumModel   AlbumModel[]
+  albums       AlbumModel[]
 
   @@map("models")
 }
 
 model Tag {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String     @id @default(uuid())
+  name      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  albums    AlbumTag[]
 
   @@map("tags")
 }
@@ -46,28 +47,29 @@ model Tag {
 model Album {
   id         String       @id @default(uuid())
   name       String       @unique
-  images     Int?         @default(0) // 图片数量
-  videos     Int?         @default(0) // 视频数量
+  imageCount Int?         @default(0) // 图片数量
+  videoCount Int?         @default(0) // 视频数量
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
   Agency     Agency?      @relation(fields: [agencyId], references: [id])
   agencyId   String?
-  AlbumModel AlbumModel[]
-  Image      Image[]
+  cover      String? // 封面
+  models     AlbumModel[]
+  images     String[]
   ageGrading AgeGrading?  @default(G)
+  tags       AlbumTag[]
 
   @@map("albums")
 }
 
-model Image {
-  id        String   @id @default(uuid())
-  url       String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Album     Album?   @relation(fields: [albumId], references: [id])
-  albumId   String?
+model AlbumTag {
+  tag     Tag    @relation(fields: [tagId], references: [id])
+  tagId   String
+  album   Album  @relation(fields: [albumId], references: [id])
+  albumId String
 
-  @@map("images")
+  @@id([tagId, albumId])
+  @@map("album_tag")
 }
 
 model Agency {

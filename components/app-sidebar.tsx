@@ -151,6 +151,13 @@ const data = {
       name: '写真',
       url: '/dashboard/albums',
       icon: PieChart,
+      actions: [
+        {
+          name: '创建',
+          url: '/dashboard/albums/create',
+          icon: Plus,
+        },
+      ],
     },
     {
       name: '机构',

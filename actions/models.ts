@@ -6,9 +6,14 @@ import type { Model } from '@prisma/client'
  * 获取模型数据的函数
  * @param page - 页码，默认为 1
  * @param pageSize - 每页大小，默认为 10
+ * @param filter
  * @returns 返回分页查询后的模型数据
  */
-export async function getModels(page = 1, pageSize = 10) {
+export async function getModels(
+  page = 1,
+  pageSize = 10,
+  filter: Partial<Pick<Model, 'name' | 'ageGrading'>> = {},
+) {
   const skip = (page - 1) * pageSize
   const take = pageSize
 
@@ -18,6 +23,14 @@ export async function getModels(page = 1, pageSize = 10) {
       take,
       orderBy: {
         updatedAt: 'desc',
+      },
+      where: {
+        name: {
+          contains: filter?.name,
+        },
+        ageGrading: {
+          equals: filter?.ageGrading,
+        },
       },
     }),
     prisma.model.count(),

@@ -18,7 +18,7 @@ export function AvatarUpload({ value, onChange, dir = 'avatar' }: ImageUploadPro
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
     if (files.length === 0) return
-    const { url } = await uploadImage(files[0], dir)
+    const url = await uploadImage(files[0], dir)
     onChange?.(url)
   }
 
