@@ -259,7 +259,7 @@ export function AlbumForm({
                     options={
                       models?.data.map((model) => ({
                         value: model.id,
-                        label: model.name + model.id,
+                        label: model.name,
                       })) || []
                     }
                     onValueChange={field.onChange}
@@ -302,7 +302,12 @@ export function AlbumForm({
               <FormItem>
                 <FormLabel>专辑内容</FormLabel>
                 <FormControl>
-                  <ImageUpload onChange={field.onChange} value={field.value} multiple />
+                  <ImageUpload
+                    onChange={field.onChange}
+                    value={field.value}
+                    multiple
+                    maxFiles={100}
+                  />
                 </FormControl>
                 <FormDescription>专辑下包含的图片</FormDescription>
                 <FormMessage />
