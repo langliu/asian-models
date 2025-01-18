@@ -12,13 +12,13 @@
     "prisma:generate": "prisma generate"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.717.0",
-    "@aws-sdk/s3-presigned-post": "^3.717.0",
-    "@aws-sdk/signature-v4-crt": "^3.716.0",
-    "@clerk/nextjs": "^6.9.6",
-    "@hookform/resolvers": "^3.9.1",
-    "@icons-pack/react-simple-icons": "^10.2.0",
-    "@prisma/client": "^6.1.0",
+    "@aws-sdk/client-s3": "^3.731.0",
+    "@aws-sdk/s3-presigned-post": "^3.731.0",
+    "@aws-sdk/signature-v4-crt": "^3.731.0",
+    "@clerk/nextjs": "^6.9.14",
+    "@hookform/resolvers": "^3.10.0",
+    "@icons-pack/react-simple-icons": "^11.0.1",
+    "@prisma/client": "^6.2.1",
     "@radix-ui/react-avatar": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.1.2",
     "@radix-ui/react-dialog": "^1.1.4",
@@ -34,16 +34,16 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@tanstack/react-table": "^8.20.6",
     "ahooks": "^3.8.4",
-    "antd": "^5.22.7",
+    "antd": "^5.23.1",
     "aws-crt": "^1.24.2",
     "aws-sdk": "^2.1692.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cmdk": "1.0.0",
+    "cmdk": "1.0.4",
     "encoding": "^0.1.13",
-    "lucide-react": "^0.469.0",
-    "next": "15.1.2",
-    "nuqs": "^2.2.3",
+    "lucide-react": "^0.473.0",
+    "next": "15.1.5",
+    "nuqs": "^2.3.1",
     "prisma": "^6.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -51,7 +51,7 @@
     "simple-icons": "^14.0.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
-    "uuid": "^11.0.3",
+    "uuid": "^11.0.5",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -61,6 +61,6 @@
     "@types/react-dom": "^19.0.2",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   }
 }
